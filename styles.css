@@ -1,81 +1,58 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
-#registration, #quiz, #result, #leaderboard {
-    margin-top: 50px;
-}
-
-input {
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #81c784;
-    border-radius: 5px;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #43a047;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #2e7d32;
+#registration,
+#quiz,
+#result {
+  padding: 20px;
 }
 
 #wheel-container {
-    margin: 20px auto;
-    position: relative;
-    height: 150px;
-    width: 150px;
-    border: 5px solid #4caf50;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #81c784, #a5d6a7);
+  margin: 20px auto;
 }
 
 #wheel {
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(45deg, #43a047, #66bb6a);
-    border-radius: 50%;
-    transform-origin: center;
-    animation: spin 0.5s ease-out;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #4caf50 0% 25%, 
+    #f44336 25% 50%, 
+    #ffeb3b 50% 75%, 
+    #2196f3 75% 100%
+  );
+  animation: spin 2s ease-out forwards;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(720deg);
+  }
 }
 
 #options button {
-    display: block;
-    margin: 10px auto;
-    width: 80%;
-    background-color: #66bb6a;
+  display: block;
+  margin: 10px auto;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-#timer, #overall-timer {
-    font-size: 20px;
-    font-weight: bold;
+#options button:hover {
+  background-color: #45a049;
 }
 
 #leaderboard ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-#leaderboard li {
-    background: #a5d6a7;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 5px;
+  list-style: none;
+  padding: 0;
 }
