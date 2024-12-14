@@ -13,51 +13,18 @@ let currentQuestionIndex = 0;
 let score = 0;
 let studentName = '';
 let leaderboard = [];
-let wheelRotation = 0;
 
-let questionTimer = 10; // Timer per question
-let overallTimer = 120; // Total quiz timer
-let questionTimerInterval;
-let overallTimerInterval;
-let startTime;
-
-// Register function
 function register() {
     studentName = document.getElementById("studentName").value;
     if (studentName) {
         document.getElementById("registration").style.display = "none";
         document.getElementById("quiz").style.display = "block";
-        startOverallTimer();
-        spinWheel();
-        startTime = Date.now();
+        displayQuestion();
     } else {
         alert("Please enter your name.");
     }
 }
 
-// Start overall quiz timer
-function startOverallTimer() {
-    document.getElementById("overall-timer").style.display = "block";
-    overallTimerInterval = setInterval(() => {
-        overallTimer--;
-        document.getElementById("overall-timer").innerText = `Total Time Left: ${overallTimer}s`;
-        if (overallTimer <= 0) {
-            clearInterval(overallTimerInterval);
-            showResult();
-        }
-    }, 1000);
-}
-
-// Spin the wheel
-function spinWheel() {
-    wheelRotation += Math.floor(Math.random() * 360) + 720;
-    document.getElementById("wheel").style.transform = `rotate(${wheelRotation}deg)`;
-    setTimeout(() => {
-        displayQuestion();
-    }, 1000);
-}
-
-// Display the current question
 function displayQuestion() {
     if (currentQuestionIndex >= questions.length) {
         showResult();
@@ -74,69 +41,26 @@ function displayQuestion() {
         button.onclick = () => checkAnswer(index);
         optionsDiv.appendChild(button);
     });
-    startQuestionTimer();
 }
 
-// Start per-question timer
-function startQuestionTimer() {
-    questionTimer = 10;
-    document.getElementById("timer").innerText = `Time Left: ${questionTimer}s`;
-    questionTimerInterval = setInterval(() => {
-        questionTimer--;
-        document.getElementById("timer").innerText = `Time Left: ${questionTimer}s`;
-        if (questionTimer <= 0) {
-            clearInterval(questionTimerInterval);
-            nextQuestion();
-        }
-    }, 1000);
-}
-
-// Check the selected answer
 function checkAnswer(selectedIndex) {
-    const correctIndex = questions[currentQuestionIndex].correct;
-    if (selectedIndex === correctIndex) {
+    if (selectedIndex === questions[currentQuestionIndex].correct) {
         score++;
     }
-    nextQuestion();
-}
-
-// Move to the next question
-function nextQuestion() {
-    clearInterval(questionTimerInterval);
     currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
-        spinWheel();
-    } else {
-        showResult();
-    }
+    displayQuestion();
 }
 
-// Show results and leaderboard
 function showResult() {
-    clearInterval(overallTimerInterval);
-    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-
-    // Add current student to the leaderboard
-    leaderboard.push({ name: studentName, score: score, time: timeTaken });
-    leaderboard.sort((a, b) => b.score - a.score || a.time - b.time);
-
     document.getElementById("quiz").style.display = "none";
     document.getElementById("result").style.display = "block";
-    document.getElementById("score").innerText = `You scored ${score} out of ${questions.length} in ${timeTaken}s`;
+    document.getElementById("score").innerText = `${studentName}, you scored ${score} out of ${questions.length}.`;
 
-    displayLeaderboard();
-}
+    leaderboard.push({ name: studentName, score: score });
+    leaderboard.sort((a, b) => b.score - a.score);
 
-// Display leaderboard
-function displayLeaderboard() {
     const leaderboardList = document.getElementById("leaderboard-list");
-    leaderboardList.innerHTML = '';
-    leaderboard.forEach((entry, index) => {
-        const listItem = document.createElement("li");
-        listItem.innerText = `${index + 1}. ${entry.name}: ${entry.score} points (${entry.time}s)`;
-        leaderboardList.appendChild(listItem);
-    });
-    const highestScore = leaderboard[0];
-    document.getElementById("highest-score").innerText = `🏆 Highest Score: ${highestScore.name} with ${highestScore.score} points in ${highestScore.time}s`;
-    document.getElementById("leaderboard").style.display = "block";
+    leaderboardList.innerHTML = leaderboard
+        .map(entry => `<li>${entry.name}: ${entry.score} points</li>`)
+        .join('');
 }
