@@ -9,14 +9,14 @@ const questions = [
     { question: "Which system controls voluntary actions?", options: ["Nervous system", "Digestive system", "Circulatory system", "Respiratory system"], correct: 0 }
 ];
 
-let currentQuestionIndex = -1;
+let currentQuestionIndex = 0;
 let score = 0;
 let studentName = '';
 let leaderboard = [];
 let wheelRotation = 0;
 
-let questionTimer = 10; // Per question timer
-let overallTimer = 120; // Overall quiz timer
+let questionTimer = 10; // Timer per question
+let overallTimer = 120; // Total quiz timer
 let questionTimerInterval;
 let overallTimerInterval;
 let startTime;
@@ -35,7 +35,7 @@ function register() {
     }
 }
 
-// Overall timer
+// Start overall quiz timer
 function startOverallTimer() {
     document.getElementById("overall-timer").style.display = "block";
     overallTimerInterval = setInterval(() => {
@@ -48,22 +48,22 @@ function startOverallTimer() {
     }, 1000);
 }
 
-// Spin wheel function
+// Spin the wheel
 function spinWheel() {
     wheelRotation += Math.floor(Math.random() * 360) + 720;
     document.getElementById("wheel").style.transform = `rotate(${wheelRotation}deg)`;
     setTimeout(() => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-            displayQuestion();
-        } else {
-            showResult();
-        }
-    }, 2000);
+        displayQuestion();
+    }, 1000);
 }
 
-// Display question
+// Display the current question
 function displayQuestion() {
+    if (currentQuestionIndex >= questions.length) {
+        showResult();
+        return;
+    }
+
     const question = questions[currentQuestionIndex];
     document.getElementById("questionText").innerText = question.question;
     const optionsDiv = document.getElementById("options");
@@ -91,7 +91,7 @@ function startQuestionTimer() {
     }, 1000);
 }
 
-// Check answer
+// Check the selected answer
 function checkAnswer(selectedIndex) {
     const correctIndex = questions[currentQuestionIndex].correct;
     if (selectedIndex === correctIndex) {
@@ -100,26 +100,30 @@ function checkAnswer(selectedIndex) {
     nextQuestion();
 }
 
-// Next question
+// Move to the next question
 function nextQuestion() {
     clearInterval(questionTimerInterval);
     currentQuestionIndex++;
-    if (currentQuestionIndex >= questions.length) {
-        showResult();
-    } else {
+    if (currentQuestionIndex < questions.length) {
         spinWheel();
+    } else {
+        showResult();
     }
 }
 
-// Show results
+// Show results and leaderboard
 function showResult() {
     clearInterval(overallTimerInterval);
     const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+
+    // Add current student to the leaderboard
     leaderboard.push({ name: studentName, score: score, time: timeTaken });
     leaderboard.sort((a, b) => b.score - a.score || a.time - b.time);
+
     document.getElementById("quiz").style.display = "none";
     document.getElementById("result").style.display = "block";
-    document.getElementById("score").innerText = `Score: ${score} / ${questions.length}`;
+    document.getElementById("score").innerText = `You scored ${score} out of ${questions.length} in ${timeTaken}s`;
+
     displayLeaderboard();
 }
 
@@ -134,4 +138,5 @@ function displayLeaderboard() {
     });
     const highestScore = leaderboard[0];
     document.getElementById("highest-score").innerText = `🏆 Highest Score: ${highestScore.name} with ${highestScore.score} points in ${highestScore.time}s`;
+    document.getElementById("leaderboard").style.display = "block";
 }
